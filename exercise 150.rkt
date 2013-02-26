@@ -14,13 +14,36 @@
 ; - (cons List-of-strings LLS)
 ; interp. : a list-of-list-of-strings is a list of lists of strings
 
-; LLS -> LLS
-; Consume a LLS and return a LLS without any articles
+; LLS -> String
+; Make a list of lists into a string
 
-(define (delete-articles LLS)
+(define (delete-articles3 LLS)
   (cond
     [(empty? LLS) empty]
-    [else 0]))
+    [(cons? LLS) true]))
+
+; LLS -> LLS
+; Apply the function delete-articles to every list in a list of lists
+
+(define (delete-articles2 LLS)
+  (cond
+    [(empty? (first LLS)) empty]
+    [(cons? (first LLS))
+     (list (delete-articles (first LLS))
+           (delete-articles2 (rest LLS)))]))
+
+; LOS -> LOS
+; Consume a LOS and return a LOS without any articles
+
+(define (delete-articles LOS)
+   (cond
+     [(empty? LOS) empty]
+     [(cons? LOS)
+      (cond
+        [(string=? "a" (first LOS)) (list (delete-articles (rest LOS)))]
+        [(string=? "an" (first LOS)) (list (delete-articles (rest LOS)))]
+        [(string=? "the" (first LOS)) (list (delete-articles (rest LOS)))]
+        [else (list (delete-articles (rest LOS)))])]))
 
 ; String -> LLS
 ; Consume a file and make a new file that is like the old one
@@ -29,4 +52,5 @@
 (define (remove-articles fn)
   (cond
     [(empty? fn) empty]
-    [else 0]))
+    [else
+     (write-file "ttt2.txt" (delete-articles2 (read-words/line "ttt.txt")))]))
